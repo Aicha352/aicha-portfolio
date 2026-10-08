@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aicha Sanogo — Développeuse Fullstack & IA</title>
+<style>
+  :root{
+    --bg: #0A0E16;
+    --bg-elevated: #12172380;
+    --bg-card: #131926;
+    --border: #232B3A;
+    --border-soft: #1A2130;
+    --text: #EAEEF6;
+    --text-muted: #8993A8;
+    --text-faint: #59617A;
+    --accent: #8B7CFF;
+    --accent-soft: #8B7CFF22;
+    --amber: #FFB454;
+    --mint: #5FE3C0;
+    --mono: 'IBM Plex Mono', 'Space Mono', monospace;
+    --sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body{
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  body::before{
+    content:'';
+    position: fixed; inset:0;
+    background-image:
+      radial-gradient(circle at 15% 10%, #8B7CFF14 0%, transparent 45%),
+      radial-gradient(circle at 85% 60%, #5FE3C010 0%, transparent 50%);
+    pointer-events:none;
+    z-index:0;
+  }
+
+  a { color: inherit; text-decoration:none; }
+
+  .wrap{ max-width: 1120px; margin:0 auto; padding: 0 32px; position:relative; z-index:1; }
+
+  /* NAV */
+  nav{
+    position: sticky; top:0; z-index:50;
+    backdrop-filter: blur(14px);
+    background: #0A0E16CC;
+    border-bottom: 1px solid var(--border-soft);
+  }
+  nav .wrap{ display:flex; align-items:center; justify-content:space-between; height:68px; }
+  .logo{ font-family: var(--mono); font-size:15px; letter-spacing:0.02em; }
+  .logo span{ color:var(--accent); }
+  .navlinks{ display:flex; gap:32px; font-size:14px; color:var(--text-muted); }
+  .navlinks a:hover{ color:var(--text); }
+  .nav-cta{
+    font-family: var(--mono); font-size:13px;
+    border:1px solid var(--border); padding:8px 16px; border-radius:6px;
+    color: var(--text);
+    transition: border-color .2s, background .2s;
+  }
+  .nav-cta:hover{ border-color: var(--accent); background: var(--accent-soft); }
+
+  /* HERO */
+  .hero{ padding: 96px 0 72px; position:relative; }
+  .hero-grid{ display:grid; grid-template-columns: 1.1fr 0.9fr; gap:48px; align-items:center; }
+  .eyebrow{
+    font-family: var(--mono); font-size:13px; color: var(--mint);
+    display:flex; align-items:center; gap:10px; margin-bottom:22px;
+  }
+  .eyebrow::before{ content:''; width:8px; height:8px; border-radius:50%; background: var(--mint); box-shadow:0 0 12px var(--mint); }
+  h1{
+    font-family: var(--sans); font-weight:700; letter-spacing:-0.02em;
+    font-size: clamp(38px, 5vw, 56px); line-height:1.08; margin-bottom:22px;
+  }
+  h1 em{ font-style:normal; color: var(--accent); }
+  .hero p.lede{ font-size:17px; color: var(--text-muted); max-width:480px; margin-bottom:32px; }
+  .hero-actions{ display:flex; gap:14px; flex-wrap:wrap; }
+  .btn{
+    font-family: var(--mono); font-size:13.5px; padding:12px 22px; border-radius:8px;
+    display:inline-flex; align-items:center; gap:8px; transition: transform .15s, box-shadow .15s;
+  }
+  .btn-primary{ background: var(--accent); color:#0A0E16; font-weight:600; }
+  .btn-primary:hover{ transform: translateY(-2px); box-shadow: 0 8px 24px #8B7CFF40; }
+  .btn-ghost{ border:1px solid var(--border); color: var(--text); }
+  .btn-ghost:hover{ border-color: var(--text-muted); transform: translateY(-2px); }
+
+  .stack-row{ display:flex; gap:18px; margin-top:40px; flex-wrap:wrap; }
+  .stack-pill{
+    font-family: var(--mono); font-size:12px; color: var(--text-faint);
+    border:1px solid var(--border-soft); padding:6px 12px; border-radius:20px;
+  }
+
+  /* NODE GRAPH SVG */
+  .node-vis{ position:relative; height:420px; }
+  .node-vis svg{ width:100%; height:100%; overflow:visible; }
+  .node-line{ stroke: var(--accent); stroke-opacity:0.28; stroke-width:1; }
+  .node-line.pulse{ stroke: var(--mint); stroke-opacity:0.5; }
+  .node-dot{ fill: var(--bg-card); stroke: var(--accent); stroke-width:1.5; }
+  .node-dot.lit{ fill: var(--accent); }
+  .node-dot.mint{ stroke: var(--mint); }
+  .node-dot.mint.lit{ fill: var(--mint); }
+  .node-label{ font-family: var(--mono); font-size:9px; fill: var(--text-faint); }
+  @keyframes drift{ 0%,100%{ transform: translateY(0px);} 50%{ transform: translateY(-8px);} }
+  .float1{ animation: drift 6s ease-in-out infinite; }
+  .float2{ animation: drift 7.5s ease-in-out infinite; animation-delay:.6s; }
+  .float3{ animation: drift 5.2s ease-in-out infinite; animation-delay:1.2s; }
+  .float4{ animation: drift 8s ease-in-out infinite; animation-delay:.3s; }
+  .float5{ animation: drift 6.8s ease-in-out infinite; animation-delay:1.6s; }
+
+  /* SECTIONS */
+  section{ padding: 88px 0; border-top: 1px solid var(--border-soft); position:relative; z-index:1; }
+  .section-head{ display:flex; align-items:baseline; gap:16px; margin-bottom:44px; }
+  .section-num{ font-family: var(--mono); color: var(--text-faint); font-size:14px; }
+  .section-title{ font-size: clamp(24px,3vw,32px); font-weight:700; letter-spacing:-0.01em; }
+
+  /* ABOUT */
+  .about-grid{ display:grid; grid-template-columns: 1fr 1fr; gap:56px; }
+  .about-grid p{ color: var(--text-muted); margin-bottom:16px; font-size:15.5px; }
+  .about-grid strong{ color: var(--text); font-weight:600; }
+  .facts{ display:flex; flex-direction:column; gap:0; border-top:1px solid var(--border-soft); }
+  .fact{ display:flex; justify-content:space-between; padding:16px 0; border-bottom:1px solid var(--border-soft); font-size:14px; }
+  .fact-k{ color: var(--text-faint); font-family: var(--mono); }
+  .fact-v{ color: var(--text); text-align:right; }
+
+  /* EXPERIENCE */
+  .exp-list{ border-top:1px solid var(--border-soft); }
+  .exp-item{
+    display:grid; grid-template-columns: 160px 1fr; gap:32px;
+    padding: 26px 0; border-bottom:1px solid var(--border-soft);
+  }
+  .exp-when{ font-family: var(--mono); font-size:12.5px; color: var(--mint); padding-top:3px; }
+  .exp-role{ font-size:17px; font-weight:700; color: var(--text); margin-bottom:10px; }
+  .exp-org{ font-weight:400; color: var(--text-muted); font-size:14.5px; }
+  .exp-body ul{ list-style:none; }
+  .exp-body li{
+    position:relative; padding-left:18px; margin-bottom:8px;
+    color: var(--text-muted); font-size:14.5px; line-height:1.55;
+  }
+  .exp-body li::before{ content:'—'; position:absolute; left:0; color: var(--text-faint); }
+  .exp-body li b{ color: var(--text); font-weight:600; }
+  @media (max-width:640px){ .exp-item{ grid-template-columns:1fr; gap:8px; } }
+
+  /* SKILLS */
+  .skills-grid{ display:grid; grid-template-columns: repeat(3, 1fr); gap:20px; }
+  .skill-card{
+    background: var(--bg-card); border:1px solid var(--border-soft); border-radius:12px; padding:24px;
+    transition: border-color .2s, transform .2s;
+  }
+  .skill-card:hover{ border-color: var(--accent); transform: translateY(-3px); }
+  .skill-card h3{ font-size:15px; margin-bottom:14px; color: var(--mint); font-family: var(--mono); font-weight:600; }
+  .skill-tags{ display:flex; flex-wrap:wrap; gap:8px; }
+  .skill-tags span{
+    font-size:12.5px; color: var(--text-muted); background:#0000; border:1px solid var(--border);
+    padding:4px 10px; border-radius:6px;
+  }
+
+  /* PROJECTS */
+  .project{
+    background: var(--bg-card); border:1px solid var(--border-soft); border-radius:14px;
+    padding:32px; margin-bottom:22px; display:grid; grid-template-columns: 44px 1fr; gap:24px;
+    transition: border-color .2s;
+  }
+  .project:hover{ border-color: #3A4258; }
+  .project.featured{ border-color: var(--accent); background: linear-gradient(135deg, #8B7CFF10, #131926); }
+  .project-idx{ font-family: var(--mono); color: var(--text-faint); font-size:13px; padding-top:3px; }
+  .project.featured .project-idx{ color: var(--accent); }
+  .project-top{ display:flex; justify-content:space-between; align-items:flex-start; gap:16px; flex-wrap:wrap; margin-bottom:10px; }
+  .project-title{ font-size:19px; font-weight:700; display:flex; align-items:center; gap:10px; }
+  .badge{ font-family:var(--mono); font-size:10.5px; padding:3px 9px; border-radius:20px; border:1px solid var(--accent); color: var(--accent); }
+  .badge.warn{ border-color: var(--amber); color: var(--amber); }
+  .project-links{ display:flex; gap:14px; font-family: var(--mono); font-size:12.5px; }
+  .project-links a{ color: var(--text-muted); border-bottom:1px solid transparent; }
+  .project-links a:hover{ color: var(--accent); border-color: var(--accent); }
+  .project-desc{ color: var(--text-muted); font-size:14.5px; margin: 12px 0 16px; max-width: 680px; }
+  .project-desc b{ color: var(--text); font-weight:600;}
+  .project-stack{ display:flex; flex-wrap:wrap; gap:8px; margin-bottom: 14px;}
+  .project-stack span{ font-size:11.5px; font-family: var(--mono); color: var(--mint); background:#5FE3C012; border:1px solid #5FE3C030; padding:3px 9px; border-radius:5px; }
+  .project-note{
+    font-size:13px; color: var(--text-faint); border-left:2px solid var(--border); padding-left:12px; margin-top:12px;
+  }
+
+  /* CONTACT */
+  .contact-box{
+    background: var(--bg-card); border:1px solid var(--border-soft); border-radius:16px;
+    padding:56px; text-align:center;
+  }
+  .contact-box h2{ font-size: clamp(26px,3.5vw,38px); margin-bottom:16px; letter-spacing:-0.01em; }
+  .contact-box p{ color: var(--text-muted); margin-bottom:32px; }
+  .contact-links{ display:flex; gap:16px; justify-content:center; flex-wrap:wrap; }
+
+  footer{ padding: 32px 0 48px; text-align:center; color: var(--text-faint); font-family: var(--mono); font-size:12.5px; }
+
+  @media (max-width: 860px){
+    .hero-grid{ grid-template-columns:1fr; }
+    .node-vis{ height:280px; order:-1; }
+    .about-grid{ grid-template-columns:1fr; }
+    .skills-grid{ grid-template-columns:1fr; }
+    .project{ grid-template-columns: 1fr; }
+    .project-idx{ display:none; }
+    .contact-box{ padding:36px 20px; }
+    .navlinks{ display:none; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <div class="logo">aicha<span>.</span>sanogo</div>
+    <div class="navlinks">
+      <a href="#about">Profil</a>
+      <a href="#experience">Expérience</a>
+      <a href="#skills">Compétences</a>
+      <a href="#projects">Projets</a>
+      <a href="#contact">Contact</a>
+    </div>
+    <a class="nav-cta" href="mailto:aichasanogo164@gmail.com">Me contacter</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <div class="eyebrow">OUVERTE AUX OPPORTUNITÉS · REMOTE</div>
+      <h1>Développeuse Fullstack Python,<br>orientée <em>IA & automatisation</em>.</h1>
+      <p class="lede">Ingénieure en Génie Logiciel, actuellement développeuse chez Ligdicash (intégration API de paiement, plateformes internes) et en Master 1 Fouille de Données &amp; IA à l'Université Paris Cité. Je construis des applications web de bout en bout — Django/Python, React/Vite, APIs — et je développe des solutions intégrant Data, IA générative et automatisation.</p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="#projects">Voir mes projets ↓</a>
+        <a class="btn btn-ghost" href="https://github.com/Aicha352" target="_blank">GitHub ↗</a>
+      </div>
+      <div class="stack-row">
+        <span class="stack-pill">Python / Django</span>
+        <span class="stack-pill">React.js / Next.js</span>
+        <span class="stack-pill">API de paiement</span>
+        <span class="stack-pill">NLP / Deep Learning</span>
+        <span class="stack-pill">Agent IA</span>
+        <span class="stack-pill">RAG (en cours)</span>
+      </div>
+    </div>
+    <div class="node-vis">
+      <svg viewBox="0 0 380 380">
+        <line class="node-line" x1="60" y1="80" x2="180" y2="140"/>
+        <line class="node-line pulse" x1="180" y1="140" x2="300" y2="70"/>
+        <line class="node-line" x1="180" y1="140" x2="150" y2="260"/>
+        <line class="node-line" x1="150" y1="260" x2="60" y2="300"/>
+        <line class="node-line pulse" x1="150" y1="260" x2="280" y2="290"/>
+        <line class="node-line" x1="300" y1="70" x2="330" y2="180"/>
+        <line class="node-line" x1="330" y1="180" x2="280" y2="290"/>
+        <line class="node-line" x1="60" y1="80" x2="60" y2="300"/>
+
+        <g class="float1"><circle class="node-dot lit" cx="60" cy="80" r="7"/><text class="node-label" x="34" y="62">query</text></g>
+        <g class="float2"><circle class="node-dot mint lit" cx="180" cy="140" r="10"/><text class="node-label" x="192" y="132">embed</text></g>
+        <g class="float3"><circle class="node-dot" cx="300" cy="70" r="6"/><text class="node-label" x="308" y="66">chunk_1</text></g>
+        <g class="float4"><circle class="node-dot" cx="150" cy="260" r="7"/><text class="node-label" x="122" y="285">retrieve</text></g>
+        <g class="float1"><circle class="node-dot" cx="60" cy="300" r="5"/><text class="node-label" x="30" y="322">chunk_2</text></g>
+        <g class="float5"><circle class="node-dot" cx="330" cy="180" r="5"/><text class="node-label" x="338" y="176">chunk_3</text></g>
+        <g class="float2"><circle class="node-dot mint lit" cx="280" cy="290" r="9"/><text class="node-label" x="292" y="310">response</text></g>
+      </svg>
+    </div>
+  </div>
+</header>
+
+<section id="about">
+  <div class="wrap about-grid">
+    <div>
+      <div class="section-head"><span class="section-num">01</span><span class="section-title">Profil</span></div>
+      <p>Je m'appelle <strong>Aicha Sanogo</strong>, Ingénieure en Génie Logiciel. Je travaille actuellement comme <strong>développeuse chez Ligdicash</strong>, où j'ai notamment contribué à une plateforme de Wallet intégrée à une API de paiement, en parallèle d'un <strong>Master 1 Fouille de Données &amp; Intelligence Artificielle</strong> à l'Université Paris Cité.</p>
+      <p>J'ai construit plusieurs applications complètes — du modèle de données jusqu'à l'interface — en <strong>Django/Python</strong> et <strong>React/Next.js</strong>. Je développe également un <strong>Agent IA</strong> avec interface React/Vite et backend Django, destiné à centraliser les produits, clients, commandes, données et fonctionnalités intelligentes. Je continue à approfondir les architectures <strong>RAG</strong>, l'intégration de LLM et les bases vectorielles.</p>
+      <p>Je cherche une équipe où contribuer sur des produits fullstack à forte composante IA, apprendre vite, et livrer du code propre et documenté.</p>
+    </div>
+    <div class="facts">
+      <div class="fact"><span class="fact-k">Poste actuel</span><span class="fact-v">Développeuse — Ligdicash</span></div>
+      <div class="fact"><span class="fact-k">Localisation</span><span class="fact-v">Bobo-Dioulasso, Burkina Faso</span></div>
+      <div class="fact"><span class="fact-k">Formation</span><span class="fact-v">M1 Fouille de Données &amp; IA (en cours) · Ingénieure Génie Logiciel</span></div>
+      <div class="fact"><span class="fact-k">Disponibilité</span><span class="fact-v">Temps plein · Remote</span></div>
+      <div class="fact"><span class="fact-k">Langues</span><span class="fact-v">Français (natif) · Anglais</span></div>
+      <div class="fact"><span class="fact-k">Email</span><span class="fact-v">aichasanogo164@gmail.com</span></div>
+      <div class="fact"><span class="fact-k">Téléphone</span><span class="fact-v">+226 57 21 75 44</span></div>
+    </div>
+  </div>
+</section>
+
+<section id="experience">
+  <div class="wrap">
+    <div class="section-head"><span class="section-num">02</span><span class="section-title">Expérience professionnelle</span></div>
+    <div class="exp-list">
+
+      <div class="exp-item">
+        <div class="exp-when">Depuis mars 2025</div>
+        <div class="exp-body">
+          <div class="exp-role">Développeuse <span class="exp-org">· Ligdicash</span></div>
+          <ul>
+            <li>Développement d'une plateforme de gestion de <b>Wallet intégrée à l'API LigdiCash</b></li>
+            <li>Développement d'une <b>Status Page</b> pour le suivi de l'état et de la disponibilité des services — <a href="https://statfront.102.204.24.31.sslip.io/" target="_blank" style="color:var(--mint); border-bottom:1px solid var(--mint);">voir en ligne ↗</a></li>
+            <li>Développement d'un système interne de gestion des demandes RH</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="exp-item">
+        <div class="exp-when">Depuis février 2025</div>
+        <div class="exp-body">
+          <div class="exp-role">Support Applicatif <span class="exp-org">· Ligdicash</span></div>
+          <ul>
+            <li>Suivi des transactions, des opérations de retrait et des incidents liés aux paiements</li>
+            <li>Assistance aux clients et marchands, suivi opérationnel, production de rapports d'activité</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="exp-item">
+        <div class="exp-when">Avril – Sept. 2024</div>
+        <div class="exp-body">
+          <div class="exp-role">Stage — Développeuse <span class="exp-org">· NAFA VISION</span></div>
+          <ul>
+            <li>Plateforme de gestion de tickets d'événements avec génération et lecture de QR Codes</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="exp-item">
+        <div class="exp-when">Nov. 2023 – Jan. 2024</div>
+        <div class="exp-body">
+          <div class="exp-role">Stage — Développeuse <span class="exp-org">· SOFITEX</span></div>
+          <ul>
+            <li>Plateforme de référencement des points d'intérêt, structuration et gestion des données</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="exp-item">
+        <div class="exp-when">Fév. – Sept. 2023</div>
+        <div class="exp-body">
+          <div class="exp-role">Stage — Développeuse <span class="exp-org">· NetSolutions</span></div>
+          <ul>
+            <li>Conception, développement et gestion des données d'une plateforme de gestion de flotte</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<section id="skills">
+  <div class="wrap">
+    <div class="section-head"><span class="section-num">03</span><span class="section-title">Compétences</span></div>
+    <div class="skills-grid">
+      <div class="skill-card">
+        <h3>FRONT-END</h3>
+        <div class="skill-tags"><span>JavaScript</span><span>React.js</span><span>Next.js</span><span>HTML5/CSS3</span><span>Streamlit</span></div>
+      </div>
+      <div class="skill-card">
+        <h3>BACK-END</h3>
+        <div class="skill-tags"><span>Python</span><span>Django</span><span>PHP</span><span>API REST</span><span>SQL / MySQL</span></div>
+      </div>
+      <div class="skill-card">
+        <h3>DATA &amp; IA</h3>
+        <div class="skill-tags"><span>Pandas</span><span>NLP</span><span>Classification (scikit-learn)</span><span>NER</span><span>Data Visualisation</span></div>
+      </div>
+      <div class="skill-card">
+        <h3>MACHINE / DEEP LEARNING</h3>
+        <div class="skill-tags"><span>Feature Engineering</span><span>CNN (MobileNetV2)</span><span>Clustering (K-Means, DBSCAN)</span><span>PCA / t-SNE</span><span>Reinforcement Learning</span></div>
+      </div>
+      <div class="skill-card">
+        <h3>IA GÉNÉRATIVE <span style="color:var(--amber); font-size:10px;">— en cours d'approfondissement</span></h3>
+        <div class="skill-tags"><span>Architectures RAG</span><span>LangChain</span><span>Bases vectorielles</span><span>APIs LLM</span></div>
+      </div>
+      <div class="skill-card">
+        <h3>ALGORITHMIQUE</h3>
+        <div class="skill-tags"><span>Structures de données</span><span>Théorie des graphes</span><span>DFS / BFS</span><span>Algorithme de Kosaraju</span></div>
+      </div>
+      <div class="skill-card">
+        <h3>OUTILS &amp; MODÉLISATION</h3>
+        <div class="skill-tags"><span>Git / GitHub</span><span>VS Code</span><span>UML</span><span>Merise</span><span>Excel / Power BI</span></div>
+      </div>
+      <div class="skill-card">
+        <h3>MÉTHODE</h3>
+        <div class="skill-tags"><span>Travail en équipe</span><span>Support applicatif</span><span>PRINCE2 Foundation</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="projects">
+  <div class="wrap">
+    <div class="section-head"><span class="section-num">04</span><span class="section-title">Projets</span></div>
+
+    <div class="project featured">
+      <div class="project-idx">01</div>
+      <div>
+        <div class="project-top">
+          <div class="project-title">Agent IA — plateforme intelligente pour entreprises <span class="badge">Fullstack · IA</span></div>
+          <div class="project-links">
+            <a href="https://github.com/Aicha352" target="_blank">GitHub ↗</a>
+          </div>
+        </div>
+        <p class="project-desc">Application Full Stack en développement avec <b>React/Vite</b> côté frontend et <b>Django/Python</b> côté backend. La plateforme centralise les produits, clients, commandes, données, réseaux et abonnements, avec un espace conversationnel permettant à l'utilisateur d'interagir avec un <b>Agent IA</b> pour consulter les informations métier et automatiser certaines tâches. Projet personnel orienté vers l'intégration d'API, l'automatisation et l'IA appliquée aux besoins des entreprises.</p>
+        <div class="project-stack"><span>Python</span><span>Django</span><span>React / Vite</span><span>API REST</span><span>IA</span><span>SQL</span></div>
+        <div class="project-note">Projet en développement — architecture frontend/backend séparée, avec évolution prévue vers davantage d'automatisations et d'intégrations IA.</div>
+      </div>
+    </div>
+
+    <div class="project featured">
+      <div class="project-idx">02</div>
+      <div>
+        <div class="project-top">
+          <div class="project-title">Chatbot FAQ intelligent — UV-BF <span class="badge">NLP · IA</span></div>
+          <div class="project-links">
+            <a href="https://github.com/ouedraogoahmed210-dev/uv-chatbot" target="_blank">Code ↗</a>
+            <a href="https://uvbf-chatbot.streamlit.app/" target="_blank">Démo live ↗</a>
+          </div>
+        </div>
+        <p class="project-desc">Agent conversationnel répondant aux questions administratives et pédagogiques des étudiants de l'Université Virtuelle du Burkina Faso. Combine <b>reconnaissance d'entités nommées</b> (règles + expressions régulières), <b>classification d'intentions</b> (modèle statistique entraîné sur 192 exemples, 16 catégories) et un moteur de correspondance sur une base de 64 questions-réponses, avec repli transparent vers un contact humain en cas d'incertitude. Interface Streamlit avec tableau de bord de suivi des interactions et boucle de retour utilisateur. Projet de groupe (5 personnes) — <b>rôle : coordination générale et contribution transverse</b>.</p>
+        <div class="project-stack"><span>Python</span><span>scikit-learn</span><span>spaCy / NER</span><span>Streamlit</span><span>Pandas</span></div>
+        <div class="project-note">Projet NLP classique (pas encore de LLM ni de base vectorielle) — prochaine étape naturelle : ajout d'une couche RAG (embeddings + Chroma + appel LLM) pour une compréhension sémantique plus fine.</div>
+      </div>
+    </div>
+
+    <div class="project">
+      <div class="project-idx">03</div>
+      <div>
+        <div class="project-top">
+          <div class="project-title">Plateforme E-commerce <span class="badge">Fullstack</span></div>
+          <div class="project-links">
+            <a href="https://github.com/Aicha352/ecombackend1" target="_blank">Back-end ↗</a>
+            <a href="https://github.com/Aicha352/ecomfront" target="_blank">Front-end ↗</a>
+          </div>
+        </div>
+        <p class="project-desc">Application e-commerce complète développée en solo : API back-end en <b>Django/Python</b> exposant les ressources (catalogue produits, panier, comptes) et interface front en <b>JavaScript</b> consommant cette API. Projet personnel réalisé de bout en bout pour mettre en pratique une architecture fullstack découplée.</p>
+        <div class="project-stack"><span>Django</span><span>Python</span><span>JavaScript</span><span>API REST</span></div>
+      </div>
+    </div>
+
+    <div class="project">
+      <div class="project-idx">04</div>
+      <div>
+        <div class="project-top">
+          <div class="project-title">Mini-projet — Analyse de données <span class="badge">Data</span></div>
+          <div class="project-links"><a href="https://github.com/Aicha352/mini_projet_data_analysis" target="_blank">Code ↗</a></div>
+        </div>
+        <p class="project-desc">Exploration et nettoyage d'un jeu de données avec extraction d'indicateurs clés, dans le cadre du parcours Master Fouille de Données &amp; IA.</p>
+        <div class="project-stack"><span>Python</span><span>Pandas</span><span>Jupyter Notebook</span></div>
+      </div>
+    </div>
+
+    <div class="project">
+      <div class="project-idx">05</div>
+      <div>
+        <div class="project-top">
+          <div class="project-title">Le transport aérien est-il équitable en Afrique de l'Ouest ? <span class="badge">Data / Storytelling</span></div>
+          <div class="project-links"><a href="https://github.com/Aicha352/mini_projet_data_dataviz_partie1" target="_blank">Code ↗</a></div>
+        </div>
+        <p class="project-desc">Analyse de la desserte aéroportuaire de 10 pays d'Afrique de l'Ouest à partir du jeu de données ouvert OurAirports : nettoyage avec <b>Pandas</b>, identification des pays sous-desservis (sans grand aéroport en service régulier), puis restitution en <b>data storytelling</b> — construction d'un message ciblé (Who/What/How), choix argumenté du graphique, et decluttering pas à pas (suppression du superflu, labellisation directe, titre déclaratif portant l'insight).</p>
+        <div class="project-stack"><span>Python</span><span>Pandas</span><span>Matplotlib</span><span>Data Storytelling</span><span>Jupyter Notebook</span></div>
+      </div>
+    </div>
+
+    <div class="project">
+      <div class="project-idx">06</div>
+      <div>
+        <div class="project-top">
+          <div class="project-title">Feature Engineering pour la vision par ordinateur — CIFAR-10 <span class="badge">Deep Learning</span></div>
+          <div class="project-links"></div>
+        </div>
+        <p class="project-desc">Travail individuel comparant trois représentations d'images (pixels bruts, <b>HOG</b>, features <b>CNN</b> extraites via MobileNetV2 pré-entraîné) et deux méthodes de sélection de features (Variance Threshold, Mutual Information) sur un sous-ensemble de CIFAR-10. Pipeline construit dans le strict respect des bonnes pratiques anti-data-leakage (split avant extraction, transformations apprises uniquement sur le train set). Meilleure configuration : features CNN + Mutual Information, réduction de 70% des features sans perte de performance et entraînement jusqu'à 16× plus rapide.</p>
+        <div class="project-stack"><span>Python</span><span>TensorFlow/Keras</span><span>scikit-learn</span><span>MobileNetV2 (CNN)</span><span>scikit-image (HOG)</span></div>
+      </div>
+    </div>
+
+    <div class="project">
+      <div class="project-idx">07</div>
+      <div>
+        <div class="project-top">
+          <div class="project-title">Segmentation de clients bancaires par clustering <span class="badge">Machine Learning</span></div>
+          <div class="project-links"></div>
+        </div>
+        <p class="project-desc">Segmentation de 850 clients d'une banque à l'aide de trois algorithmes de clustering (<b>K-Means</b>, DBSCAN, hiérarchique), évalués et comparés objectivement via les métriques Silhouette, Davies-Bouldin et l'indice de Dunn. Réduction de dimension (<b>PCA</b>, t-SNE) pour visualiser la structure des segments obtenus. Projet de groupe (5 personnes).</p>
+        <div class="project-stack"><span>Python</span><span>scikit-learn</span><span>PCA / t-SNE</span><span>Pandas</span></div>
+      </div>
+    </div>
+
+    <div class="project">
+      <div class="project-idx">08</div>
+      <div>
+        <div class="project-top">
+          <div class="project-title">Système de renforcement pour encourager l'activité physique chez des patients diabétiques <span class="badge">Reinforcement Learning</span></div>
+          <div class="project-links"></div>
+        </div>
+        <p class="project-desc">Étude d'un système de santé numérique basé sur un <b>algorithme de bandit contextuel</b>, envoyant chaque jour un message personnalisé à des patients diabétiques sédentaires pour encourager l'activité physique, sur la base d'un état (contexte patient) et d'une fonction de récompense mesurant le changement d'activité. Analyse critique de l'expérience pilote (27 patients, 26 semaines) : biais de répartition des groupes, exploration/exploitation via échantillonnage de Boltzmann. Projet de groupe (5 personnes).</p>
+        <div class="project-stack"><span>Reinforcement Learning</span><span>Bandit contextuel</span><span>Santé numérique</span></div>
+      </div>
+    </div>
+
+    <div class="project">
+      <div class="project-idx">09</div>
+      <div>
+        <div class="project-top">
+          <div class="project-title">Théorie des graphes — Connexité <span class="badge">Algorithmique</span></div>
+          <div class="project-links"></div>
+        </div>
+        <p class="project-desc">Résolution de deux problèmes de connexité de graphes : analyse d'un labyrinthe (graphe non orienté à 39 zones) par <b>DFS</b> et <b>BFS</b> pour déterminer l'accessibilité et les chemins les plus courts, et étude de la connexité forte d'un plan de circulation (graphe orienté) via l'<b>algorithme de Kosaraju</b>. Projet de groupe (5 personnes).</p>
+        <div class="project-stack"><span>Structures de données</span><span>DFS / BFS</span><span>Kosaraju</span></div>
+      </div>
+    </div>
+
+    <div class="project">
+      <div class="project-idx">10</div>
+      <div>
+        <div class="project-top">
+          <div class="project-title">Blog <span class="badge">Web</span></div>
+          <div class="project-links"><a href="https://github.com/Aicha352/Blog" target="_blank">Code ↗</a></div>
+        </div>
+        <p class="project-desc">Application web de blog développée pour pratiquer la création et la gestion de contenu côté serveur.</p>
+        <div class="project-stack"><span>Python</span><span>Django</span></div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<section id="contact">
+  <div class="wrap">
+    <div class="contact-box">
+      <h2>Discutons de votre équipe.</h2>
+      <p>Ouverte aux opportunités Full Stack Python, Data & IA, en remote ou hybride.</p>
+      <div class="contact-links">
+        <a class="btn btn-primary" href="mailto:aichasanogo164@gmail.com">✉ aichasanogo164@gmail.com</a>
+        <a class="btn btn-ghost" href="https://www.linkedin.com/in/aicha-sanogo-1172a829a/" target="_blank">LinkedIn ↗</a>
+        <a class="btn btn-ghost" href="https://github.com/Aicha352" target="_blank">GitHub ↗</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>© 2026 Aicha Sanogo — construit avec Django, du café, et de la curiosité.</footer>
+
+</body>
+</html>
